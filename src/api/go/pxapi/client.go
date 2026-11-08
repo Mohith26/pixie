@@ -64,9 +64,10 @@ type Client struct {
 	disableTLSVerification bool
 	insecureDirect         bool
 
-	grpcConn *grpc.ClientConn
-	cmClient cloudpb.VizierClusterInfoClient
-	vizier   vizierpb.VizierServiceClient
+	grpcConn  *grpc.ClientConn
+	cmClient  cloudpb.VizierClusterInfoClient
+	scriptMgr cloudpb.ScriptMgrClient
+	vizier    vizierpb.VizierServiceClient
 }
 
 // NewClient creates a new Pixie API Client.
@@ -103,6 +104,7 @@ func (c *Client) init(ctx context.Context) error {
 
 	c.grpcConn = conn
 	c.cmClient = cloudpb.NewVizierClusterInfoClient(conn)
+	c.scriptMgr = cloudpb.NewScriptMgrClient(conn)
 
 	c.vizier = vizierpb.NewVizierServiceClient(conn)
 	return nil

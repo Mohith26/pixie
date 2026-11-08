@@ -36,11 +36,13 @@ type VizierClient struct {
 
 // ExecuteScript runs the script on vizier.
 func (v *VizierClient) ExecuteScript(ctx context.Context, pxl string, mux TableMuxer) (*ScriptResults, error) {
-	req := &vizierpb.ExecuteScriptRequest{
-		ClusterID:         v.vizierID,
-		QueryStr:          pxl,
-		EncryptionOptions: v.encOpts,
-	}
+	return v.execute(ctx, &vizierpb.ExecuteScriptRequest{QueryStr: pxl}, mux)
+}
+
+// execute sends req to this Vizier with its cluster ID and encryption options set.
+func (v *VizierClient) execute(ctx context.Context, req *vizierpb.ExecuteScriptRequest, mux TableMuxer) (*ScriptResults, error) {
+	req.ClusterID = v.vizierID
+	req.EncryptionOptions = v.encOpts
 	origCtx := ctx
 	ctx, cancel := context.WithCancel(ctx)
 	res, err := v.vzClient.ExecuteScript(v.cloud.cloudCtxWithMD(ctx), req)
